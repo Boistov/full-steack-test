@@ -4,15 +4,16 @@ import stripe
 import os
 
 # Initialize the Flask app
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 
-# Load configuration from the config.py file (we will define secret keys and db URL here)
+# Load configuration from the config.py file
 app.config.from_object('config.Config')
 
 # Initialize the database
 db = SQLAlchemy(app)
 
 stripe.api_key = app.config['STRIPE_SECRET_KEY']
+
 # Define the database model for saving user emails
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -24,7 +25,7 @@ class User(db.Model):
 # Route to serve the landing page
 @app.route('/')
 def index():
-    return render_template('landing_page.html')
+    return render_template('templates/landing_page.html')
 
 # Route to create a PaymentIntent with Stripe
 @app.route('/create-payment-intent', methods=['POST'])
@@ -46,11 +47,9 @@ def create_payment():
         db.session.commit()
 
         # Return the client secret needed to complete the payment on the frontend
-        return jsonify({
-            'clientSecret': intent.client_secret
-        })
+        return jsonify({'clientSecret': intent.client_secret})
     except Exception as e:
         return jsonify(error=str(e)), 400
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True)  # This line should only be run when not using Gunicorn
