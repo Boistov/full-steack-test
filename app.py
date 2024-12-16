@@ -4,7 +4,7 @@ import stripe
 import os
 
 # Initialize the Flask app
-app = Flask(__name__, template_folder='templates')
+app = Flask(__name__, template_folder='views')
 
 # Load configuration from the config.py file
 app.config.from_object('config.Config')
@@ -25,7 +25,7 @@ class User(db.Model):
 # Route to serve the landing page
 @app.route('/')
 def index():
-    return render_template('templates/landing_page.html')
+    return render_template('landing_page.html')
 
 # Route to create a PaymentIntent with Stripe
 @app.route('/create-payment-intent', methods=['POST'])
